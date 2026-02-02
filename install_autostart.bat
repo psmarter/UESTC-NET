@@ -11,7 +11,7 @@ set "SCRIPT_PATH=%SCRIPT_DIR%always_online.py"
 
 :: 检查 Python 环境 (优先使用 py 启动器)
 where py >nul 2>&1
-if %errorlevel% eq 0 (
+if %errorlevel% equ 0 (
     set "PYTHON_CMD=pyw"
     echo [Check] 发现 py 启动器，将使用 pyw 运行脚本
     goto :create_task
@@ -19,7 +19,7 @@ if %errorlevel% eq 0 (
 
 :: 备选：检查 pythonw
 where pythonw >nul 2>&1
-if %errorlevel% eq 0 (
+if %errorlevel% equ 0 (
     set "PYTHON_CMD=pythonw"
     echo [Check] 发现 pythonw，将使用 pythonw 运行脚本
     goto :create_task
@@ -34,10 +34,20 @@ exit /b 1
 echo 脚本路径: %SCRIPT_PATH%
 echo.
 
+:: 创建 VBS 启动脚本（静默运行） - 提前创建以供后续使用
+echo 正在准备启动脚本...
+set "VBS_PATH=%SCRIPT_DIR%start_silent.vbs"
+(
+echo Set WshShell = CreateObject^("WScript.Shell"^)
+echo WshShell.CurrentDirectory = "%SCRIPT_DIR%"
+echo WshShell.Run "%PYTHON_CMD% ""%SCRIPT_PATH%""", 0, False
+) > "%VBS_PATH%"
+
+
 :: 创建任务计划
 echo [1/2] 正在创建开机自启动任务...
-schtasks /delete /tn "UESTC-NET-AutoLogin" /f >nul 2>&1
-schtasks /create /tn "UESTC-NET-AutoLogin" /tr "\"%PYTHON_CMD%\" \"%SCRIPT_PATH%\"" /sc onlogon /rl highest /f
+schtasks /delete /tn "UESTC-NET" /f >nul 2>&1
+schtasks /create /tn "UESTC-NET" /tr "\"%PYTHON_CMD%\" \"%SCRIPT_PATH%\"" /sc onlogon /rl highest /f
 
 if %errorlevel% equ 0 (
     echo [成功] 开机自启动任务已创建！
@@ -47,14 +57,7 @@ if %errorlevel% equ 0 (
     goto :startup_folder
 )
 
-:: 创建 VBS 启动脚本（静默运行）
-echo [2/2] 正在创建静默启动脚本...
-set "VBS_PATH=%SCRIPT_DIR%start_silent.vbs"
-(
-echo Set WshShell = CreateObject^("WScript.Shell"^)
-echo WshShell.CurrentDirectory = "%SCRIPT_DIR%"
-echo WshShell.Run "%PYTHON_CMD% ""%SCRIPT_PATH%""", 0, False
-) > "%VBS_PATH%"
+
 
 echo.
 echo ==========================================
@@ -74,7 +77,7 @@ exit /b 0
 :: 备选方案：复制到启动文件夹
 echo 正在使用启动文件夹方式...
 set "STARTUP=%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup"
-copy "%VBS_PATH%" "%STARTUP%\UESTC-NET-AutoLogin.vbs" >nul
+copy "%VBS_PATH%" "%STARTUP%\UESTC-NET.vbs" >nul
 if %errorlevel% equ 0 (
     echo [成功] 已添加到启动文件夹！
 ) else (

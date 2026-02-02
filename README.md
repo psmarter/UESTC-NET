@@ -8,6 +8,8 @@
 
 轻量脚本，自动检测网络并在掉线时重登深澜 Portal，可选企业微信通知。
 
+- [详情请点击这里(博客文章)](https://smarter.xin/posts/1f06d3bd/)
+
 ## 快速开始
 
 1. 安装依赖：`py -m pip install -r requirements.txt`
@@ -33,12 +35,59 @@
 
 ## 开机自启（任选其一）
 
-- 任务计划程序（管理员）  
-  - 在 CMD：`schtasks /create /tn "UESTC-NET" /tr "\"%SystemRoot%\System32\pythonw.exe\" \"<项目路径>\\always_online.py\"" /sc onlogon /rl HIGHEST /f`
-- NSSM 服务（自备 nssm.exe）：  
-  `nssm install UESTC-NET "%SystemRoot%\System32\pythonw.exe" "<项目路径>\\always_online.py"`  
-  `nssm set UESTC-NET AppDirectory "<项目路径>"`  
-  `nssm set UESTC-NET Start SERVICE_AUTO_START`
+### 方式 1：一键脚本（推荐）
+
+直接双击运行 **`install_autostart.bat`** 即可。
+
+- 自动创建开机自启任务（优先尝试任务计划程序，无需手动输入命令）。
+- 同时也提供了 `run_background.bat` 用于单次后台启动。
+
+### 方式 2：手动配置
+
+如果你喜欢自己动手，可以选择以下方式之一（注意替换 `<Python路径>` 和 `<项目路径>`）：
+
+#### A. 任务计划程序（管理员）
+
+```cmd
+schtasks /create /tn "UESTC-NET" /tr "\"<Python路径>\pythonw.exe\" \"<项目路径>\\always_online.py\"" /sc onlogon /rl HIGHEST /f
+```
+
+#### B. NSSM 服务（需自备 nssm.exe）
+
+```cmd
+nssm install UESTC-NET "<Python路径>\pythonw.exe" "<项目路径>\\always_online.py"
+nssm set UESTC-NET AppDirectory "<项目路径>"
+nssm set UESTC-NET Start SERVICE_AUTO_START
+```
+
+## 停止与卸载
+
+如果你想停止后台运行的程序或取消开机自启，可以使用以下任一方法：
+
+### 方法 1：使用停止脚本（最简单）
+
+双击运行项目目录下的 **`uninstall.bat`**。
+
+- 停止所有后台运行的脚本进程。
+- 删除开机自启任务和启动文件。
+
+### 方法 2：命令行手动停止
+
+如果只想临时关闭当前运行的程序（不影响下次开机自启）：
+
+```powershell
+taskkill /F /IM pythonw.exe
+```
+
+*注意：这会强制关闭所有后台 Python 进程。*
+
+### 方法 3：任务计划程序
+
+手动管理自启任务：
+
+1. `Win + R` 输入 `taskschd.msc`。
+2. 找到 `UESTC-NET` 任务。
+3. 右键选择“禁用”或“删除”。
 
 ## 微信通知（可选）
 
