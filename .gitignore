@@ -1,0 +1,29 @@
+# UESTC-NET 本地配置和日志
+
+# 配置文件（包含敏感信息）
+config.py
+
+# 日志
+logs/
+*.log
+
+# Python 缓存
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+
+# 本地敏感/生成文件
+config.py
+*.vbs
+nssm.exe
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 系统文件
+.DS_Store
+Thumbs.db
