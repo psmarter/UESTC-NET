@@ -29,7 +29,7 @@
 ![alt text](fig/image-2.png)
 
 3. 持续监控
-![alt text](fig/image-3.png)
+![alt text](fig/image-1.png)
 
 ## 开机自启（任选其一）
 
