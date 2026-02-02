@@ -12,8 +12,8 @@ set "SCRIPT_PATH=%SCRIPT_DIR%always_online.py"
 :: 检查 Python 环境 (优先使用 py 启动器)
 where py >nul 2>&1
 if %errorlevel% equ 0 (
-    set "PYTHON_CMD=pyw"
-    echo [Check] 发现 py 启动器，将使用 pyw 运行脚本
+    echo [Check] 发现 py 启动器，正在解析 pythonw 绝对路径...
+    for /f "delims=" %%i in ('py -c "import sys; import os; print(os.path.join(os.path.dirname(sys.executable), 'pythonw.exe'))"') do set "PYTHON_CMD=%%i"
     goto :create_task
 )
 
